@@ -1,0 +1,27 @@
+# Local config and notes (CLAUDE.md is internal context, not for a public repo)
+.claude/
+CLAUDE.md
+
+# Secrets and environment
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Build and deploy artifacts
+*.zip
+*.tar.gz
+fn/
+
+# Course material with screenshots of the AWS console
+evidencias/
+guia-cognito-amigos/
+~$*
+
+# Local notes with AWS resource IDs
+README.md

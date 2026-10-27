@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}DynamoDB · Panel Nube{% endblock %}
+{% block content %}
+<header class="encabezado">
+  <div>
+    <h1>Consultas DynamoDB</h1>
+    <p class="sub">Filtra cualquier tabla, sigue sus relaciones y registra clientes y productos nuevos.</p>
+  </div>
+</header>
+
+<div class="dynamo">
+  <aside class="panel tablas">
+    <h2>Tablas</h2>
+    <ul id="tablas" class="tablas-lista"><li class="vacio">Cargando tablas…</li></ul>
+  </aside>
+
+  <section class="panel resultado">
+    <div id="vacio" class="vacio-grande">Elige una tabla para ver sus datos.</div>
+
+    <div id="panel" hidden>
+      <div class="tabla-cabeza">
+        <h2 id="titulo" class="tabla-nombre"></h2>
+        <ul id="hechos" class="hechos"></ul>
+      </div>
+
+      <div class="pestanas" role="tablist" aria-label="Tipo de consulta">
+        <button role="tab" id="tab-filtrar" aria-selected="true" aria-controls="form-filtrar">Filtrar</button>
+        <button role="tab" id="tab-llave" aria-selected="false" aria-controls="form-item">Buscar por ID</button>
+        <button role="tab" id="tab-indice" aria-selected="false" aria-controls="form-indice">Consultar índice</button>
+        <button role="tab" id="tab-nuevo" aria-selected="false" aria-controls="form-nuevo" class="tab-nuevo" hidden>Nuevo registro</button>
+      </div>
+
+      <form id="form-filtrar" class="consulta consulta-filtros" role="tabpanel" aria-labelledby="tab-filtrar">
+        <div id="atajos" class="atajos"></div>
+        <div id="filtros" class="filtros"></div>
+        <div class="acciones-form">
+          <button type="button" class="btn-fantasma" id="btn-agregar-filtro">Agregar filtro</button>
+          <label class="campo campo-corto">
+            <span>Filas por página</span>
+            <select name="limit"><option>10</option><option selected>25</option><option>50</option><option>100</option></select>
+          </label>
+          <button class="btn">Consultar</button>
+          <button type="button" class="btn-texto" id="btn-limpiar" hidden>Quitar filtros</button>
+        </div>
+        <p class="nota">Los filtros se ejecutan en DynamoDB con FilterExpression: distinguen mayúsculas y tildes.</p>
+      </form>
+
+      <form id="form-item" class="consulta" role="tabpanel" aria-labelledby="tab-llave" hidden>
+        <label class="campo"><span id="pk-etiqueta">ID</span><input name="pk" id="pk" required></label>
+        <label class="campo" id="sk-campo" hidden><span id="sk-etiqueta">Llave de orden</span><input name="sk" id="sk"></label>
+        <button class="btn">Buscar</button>
+      </form>
+
+      <form id="form-indice" class="consulta" role="tabpanel" aria-labelledby="tab-indice" hidden>
+        <label class="campo campo-corto"><span>Índice</span><select name="indice" id="indice"></select></label>
+        <label class="campo"><span id="ipk-etiqueta">Llave del índice</span><input name="pk" id="ipk" required></label>
+        <label class="campo" id="isk-campo" hidden><span id="isk-etiqueta">Empieza con (opcional)</span><input name="sk" id="isk"></label>
+        <button class="btn">Consultar</button>
+      </form>
+
+      <form id="form-nuevo" class="consulta form-nuevo" role="tabpanel" aria-labelledby="tab-nuevo" hidden novalidate>
+        <div class="nuevo-id">
+          <span class="nuevo-id-etiqueta">Se guardará como</span>
+          <strong id="nuevo-id">—</strong>
+          <span class="sub">El ID se asigna solo y nunca reemplaza un registro existente.</span>
+        </div>
+        <div id="nuevo-campos" class="nuevo-campos"></div>
+        <p id="nuevo-error" class="alerta" role="alert" hidden></p>
+        <div class="acciones-form">
+          <button class="btn" id="btn-guardar">Guardar</button>
+          <button type="reset" class="btn-texto">Limpiar formulario</button>
+        </div>
+      </form>
+
+      <div class="resultado-barra">
+        <span id="conteo" class="sub" aria-live="polite"></span>
+        <label class="buscar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+          <input id="filtro" type="search" placeholder="Buscar en estos resultados" aria-label="Buscar en estos resultados">
+        </label>
+      </div>
+
+      <div class="rejilla-wrap">
+        <table class="rejilla">
+          <thead id="cabecera"></thead>
+          <tbody id="filas"></tbody>
+        </table>
+      </div>
+      <div class="pie">
+        <button class="btn-fantasma" id="btn-mas" hidden>Cargar más filas</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="velo" class="velo" hidden></div>
+<aside id="detalle" class="detalle" aria-hidden="true" aria-labelledby="detalle-titulo">
+  <div class="detalle-cabeza">
+    <button class="btn-icono" id="detalle-volver" aria-label="Volver al elemento anterior" title="Volver" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+    <h2 id="detalle-titulo">Elemento</h2>
+    <button class="btn-icono" id="detalle-copiar" aria-label="Copiar JSON" title="Copiar JSON">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+    </button>
+    <button class="btn-icono" id="detalle-cerrar" aria-label="Cerrar detalle">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="detalle-cuerpo">
+    <pre id="detalle-json" class="json"></pre>
+    <div id="relaciones" class="relaciones"></div>
+  </div>
+</aside>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='dynamo.js', v=v) }}"></script>{% endblock %}

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>{% block title %}Panel Nube{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Unbounded:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css', v=v) }}">
+  <script>window.PANEL = {{ panel|tojson }};</script>
+  <script src="https://cdn.jsdelivr.net/npm/oidc-client-ts@3.1.0/dist/browser/oidc-client-ts.min.js" integrity="sha384-cl/YPPu7KQlFcaRg3Cq3DsU+Jh0s9V9Vx9zqGFR+gbue22aT1fXfKlPEV9dJdg5N" crossorigin="anonymous"></script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235EEAD4' stroke-width='1.8'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cellipse cx='12' cy='12' rx='10' ry='4.5' transform='rotate(-20 12 12)'/%3E%3C/svg%3E">
+</head>
+<body class="{{ 'con-riel' if activo else 'sin-riel' }}">
+  <canvas id="cielo" aria-hidden="true"></canvas>
+
+  {% if activo %}
+  <aside class="riel">
+    <a class="logo" href="{{ url_for('index') }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-20 12 12)"/></svg>
+      <span>Panel Nube</span>
+    </a>
+    <nav aria-label="Secciones">
+      <a href="{{ url_for('archivos') }}" class="{{ 'activo' if activo == 'archivos' }}" {% if activo == 'archivos' %}aria-current="page"{% endif %}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16l-1.6 12.2a2 2 0 0 1-2 1.8H7.6a2 2 0 0 1-2-1.8L4 7z"/><ellipse cx="12" cy="7" rx="8" ry="2.5"/></svg>
+        <span>Bucket</span>
+      </a>
+      <a href="{{ url_for('dynamo') }}" class="{{ 'activo' if activo == 'dynamo' }}" {% if activo == 'dynamo' %}aria-current="page"{% endif %}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-13"/><path d="M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></svg>
+        <span>DynamoDB</span>
+      </a>
+    </nav>
+    <div class="sesion">
+      <span class="avatar" id="avatar" aria-hidden="true">·</span>
+      <span class="quien" id="quien">Verificando sesión…</span>
+      <button type="button" class="btn-icono" id="btn-salir" aria-label="Cerrar sesión" title="Cerrar sesión">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></svg>
+      </button>
+    </div>
+  </aside>
+  {% endif %}
+
+  <main class="{{ 'vista' if activo else 'vista-login' }}">
+    {% block content %}{% endblock %}
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="{{ url_for('static', filename='comun.js', v=v) }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

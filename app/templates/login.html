@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión · Panel Nube{% endblock %}
+{% block content %}
+<section class="login">
+  <div class="login-marca">
+    <svg class="login-orbita" viewBox="0 0 600 600" aria-hidden="true">
+      <defs>
+        <linearGradient id="gradLogin" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#5EEAD4"/>
+          <stop offset=".55" stop-color="#A78BFA"/>
+          <stop offset="1" stop-color="#FF7A9A"/>
+        </linearGradient>
+      </defs>
+      <ellipse class="anillo" cx="300" cy="300" rx="280" ry="118" transform="rotate(-18 300 300)" pathLength="100"/>
+      <ellipse class="anillo tenue" cx="300" cy="300" rx="230" ry="92" transform="rotate(-18 300 300)"/>
+      <circle class="satelite" cx="566" cy="214" r="6"/>
+    </svg>
+    <h1 class="palabra"><span>Panel</span><span>Nube</span></h1>
+    <p class="login-sub">Archivos del bucket y tablas de DynamoDB, en un solo lugar.</p>
+  </div>
+
+  <div class="login-form">
+    <h2>Iniciar sesión</h2>
+    <p class="sub">Tu identidad la valida Amazon Cognito. Al volver, la API exige tu token en cada consulta.</p>
+    <div id="login-error" class="alerta" role="alert" hidden></div>
+    <button type="button" class="btn" id="btn-entrar">Entrar</button>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', filename='entrada.js', v=v) }}"></script>{% endblock %}

@@ -1,0 +1,16 @@
+[Unit]
+Description=Panel Nube (Flask + gunicorn)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=panelnube
+Group=panelnube
+WorkingDirectory=/opt/panel-nube
+EnvironmentFile=/etc/panel-nube.env
+ExecStart=/opt/panel-nube/venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8000 --timeout 90 app:app
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

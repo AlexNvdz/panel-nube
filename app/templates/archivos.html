@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Bucket · Panel Nube{% endblock %}
+{% block content %}
+<header class="encabezado">
+  <div>
+    <h1>Gestor del bucket</h1>
+    <p class="sub">Sube, abre y elimina archivos de <strong>{{ bucket }}</strong>.</p>
+  </div>
+  <dl class="cifras">
+    <div><dt>Archivos</dt><dd id="n-archivos">—</dd></div>
+    <div><dt>Espacio usado</dt><dd id="peso">—</dd></div>
+  </dl>
+</header>
+
+<section class="subida">
+  <label class="portal" id="portal" data-estado="reposo" tabindex="0">
+    <svg class="orbita" viewBox="0 0 240 240" aria-hidden="true">
+      <defs>
+        <linearGradient id="gradOrbita" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#5EEAD4"/>
+          <stop offset=".55" stop-color="#A78BFA"/>
+          <stop offset="1" stop-color="#FF7A9A"/>
+        </linearGradient>
+      </defs>
+      <circle class="marcas" cx="120" cy="120" r="112" pathLength="360"/>
+      <circle class="pista" cx="120" cy="120" r="98"/>
+      <circle class="progreso" id="progreso" cx="120" cy="120" r="98" pathLength="100"/>
+      <g class="satelite" id="satelite"><circle cx="120" cy="22" r="5"/></g>
+    </svg>
+    <div class="portal-centro">
+      <span class="portal-icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg>
+      </span>
+      <span class="portal-pct" id="portal-pct" aria-hidden="true">0%</span>
+      <strong id="portal-titulo">Suelta tus archivos aquí</strong>
+      <span id="portal-detalle">o haz clic para elegirlos</span>
+    </div>
+    <input type="file" id="archivo" multiple class="oculto"
+      accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.mp4,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+  </label>
+
+  <div class="cola panel">
+    <div class="cola-cabeza">
+      <h2>Subidas</h2>
+      <p class="sub">Fotos, PDF, MP4, Word, Excel o PowerPoint. Hasta 10 MB cada uno.</p>
+    </div>
+    <ul id="cola" class="cola-lista" aria-live="polite">
+      <li class="vacio">Las subidas de esta sesión aparecen aquí.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="panel archivos">
+  <div class="barra">
+    <h2>Archivos</h2>
+    <label class="buscar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+      <input id="filtro" type="search" placeholder="Buscar por nombre" aria-label="Buscar por nombre">
+    </label>
+    <button class="btn-icono" id="btn-recargar" aria-label="Recargar lista" title="Recargar lista">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+    </button>
+  </div>
+  <ul id="lista" class="lista"></ul>
+</section>
+
+<dialog id="visor" class="visor">
+  <div class="visor-cabeza">
+    <strong id="visor-nombre"></strong>
+    <a id="visor-abrir" class="btn-fantasma" target="_blank" rel="noopener">Abrir en otra pestaña</a>
+    <button class="btn-icono" id="visor-cerrar" aria-label="Cerrar vista previa">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div id="visor-cuerpo" class="visor-cuerpo"></div>
+</dialog>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='archivos.js', v=v) }}"></script>{% endblock %}
